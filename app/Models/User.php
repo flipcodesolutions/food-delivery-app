@@ -23,22 +23,6 @@ class User extends Authenticatable
         'phone',
         'password',
         'role',
-        'profile_image',
-        'address',
-        'latitude',
-        'longitude',
-        'restaurant_name',
-        'logo',
-        'opening_time',
-        'closing_time',
-        'commission_rate',
-        'vehicle_type',
-        'vehicle_number',
-        'driving_license',
-        'availability_status',
-        'earning_balance',
-        'wallet_balance',
-        'admin_role',
         'status',
     ];
 
@@ -51,19 +35,19 @@ class User extends Authenticatable
     ];
 
     /**
-     * @return array<string, string>
+    //    @return array<string, string>
      */
-    protected function casts(): array
-    {
-        return [
-            'password' => 'hashed',
-            'latitude' => 'decimal:7',
-            'longitude' => 'decimal:7',
-            'commission_rate' => 'decimal:2',
-            'earning_balance' => 'decimal:2',
-            'wallet_balance' => 'decimal:2',
-        ];
-    }
+    // protected function casts(): array
+    // {
+    //     return [
+    //         'password' => 'hashed',
+    //         'latitude' => 'decimal:7',
+    //         'longitude' => 'decimal:7',
+    //         'commission_rate' => 'decimal:2',
+    //         'earning_balance' => 'decimal:2',
+    //         'wallet_balance' => 'decimal:2',
+    //     ];
+    // }
 
     public function restaurantCategories(): HasMany
     {
