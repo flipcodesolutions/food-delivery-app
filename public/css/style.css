@@ -201,3 +201,83 @@ footer {
 .main-content.expanded {
     margin-left: 80px;
 }
+/* Main select box */
+.form-select {
+    accent-color: #20c997 !important;
+}
+
+/* Dropdown options */
+.form-select option {
+    background-color: #343a40 !important;
+    color: #fff !important;
+}
+
+/* Hover effect (limited browser support but works in Chrome) */
+.form-select option:hover {
+    background-color: #20c997 !important;
+    color: #fff !important;
+}
+
+/* Selected option */
+.form-select option:checked {
+    background-color: #20c997 !important;
+    color: #fff !important;
+}
+.btn-custom {
+    background-color: #20c997;
+    border: 1px solid #20c997;
+    color: #fff;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.btn-custom:hover {
+    background-color: #1aa179;
+    border-color: #1aa179;
+    color: #fff;
+}
+
+.btn-custom:focus,
+.btn-custom:active {
+    background-color: #178f6e !important;
+    border-color: #178f6e !important;
+    box-shadow: 0 0 0 0.2rem rgba(32, 201, 151, 0.3);
+}
+
+/* Common button style */
+.btn-action {
+    font-size: 13px;
+    padding: 6px 12px;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    border: none;
+}
+
+/* EDIT BUTTON (matches your theme #20c997) */
+.btn-edit {
+    background-color: #20c997;
+    color: #fff;
+}
+
+.btn-edit:hover {
+   background-color: #1aa179;
+    border-color: #1aa179;
+    color: #fff;
+}
+
+/* DELETE BUTTON (danger but aligned with theme) */
+.btn-delete {
+    background-color: #dc3545;
+    color: #fff;
+}
+
+.btn-delete:hover {
+    background-color: #b52a37;
+    color: #fff;
+}
+
+/* Focus clean look */
+.btn-action:focus {
+    box-shadow: none !important;
+}
+
