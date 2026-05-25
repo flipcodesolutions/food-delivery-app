@@ -14,7 +14,7 @@ class AuthController extends Controller
     //Register API
     public function register(Request $request){
         $validator = Validator::make($request->all(), [
-            'email' => 'required|email|unique:customers,email',
+           'email' => 'required|email|unique:users,email',
             'password' => 'required|min:6'
         ]);
 
@@ -35,7 +35,7 @@ class AuthController extends Controller
     // login API
     public function login(Request $request){
        $validator = Validator::make($request->all(), [
-            'email' => 'required|email|unique:customers,email',
+            'email' => 'required|email',
             'password' => 'required|min:6'
         ]);
 
@@ -49,10 +49,10 @@ class AuthController extends Controller
         if (!$customer) {
 
             // return apiResponse(false,'Customer not found, please register',$customer,404);
-            $customer = User::create([
-                'email' => $request->emial,
-                'password' => $request->password,
-            ]);
+            // $customer = User::create([
+            //     'email' => $request->email,
+            //     'password' => Hash::make($request->password),
+            // ]);
         }
 
         if (!Hash::check($request->password, $customer->password)) {
@@ -60,10 +60,17 @@ class AuthController extends Controller
             return apiResponse( false, 'Invalid Password', [], 401 );
         }
 
-
         $token = $customer->createToken('Customer_Token')->plainTextToken;
 
-        return apiResponse(true,'Customer Login',[ 'token' => $token , 'customer' => $customer, 200]);
+        return apiResponse(
+    true,
+    'Customer Login',
+    [
+        'token' => $token,
+        'customer' => $customer
+    ],
+    200
+);
     }
 
     //Forgate Password API
