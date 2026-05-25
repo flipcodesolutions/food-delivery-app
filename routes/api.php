@@ -14,3 +14,5 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('/restaurant/logout', [AuthController::class, 'logout']);
 });
+
+
