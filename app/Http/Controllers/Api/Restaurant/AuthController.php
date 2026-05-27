@@ -1,17 +1,17 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\Api\Restaurant;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Models\Restaurant;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Password;
 
 class AuthController extends Controller
 {
-    // ---------------- REGISTER ----------------
     public function restaurantRegister(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -21,6 +21,13 @@ class AuthController extends Controller
             'email' => 'nullable|email|unique:users,email',
             'password' => 'required|min:8',
             'address' => 'nullable|string',
+
+            // optional restaurant fields
+            'detail' => 'nullable|string',
+            'logo' => 'nullable|string',
+            'opening_time' => 'nullable',
+            'closing_time' => 'nullable',
+            'commission_rate' => 'nullable|numeric',
         ]);
 
         if ($validator->fails()) {
@@ -32,7 +39,7 @@ class AuthController extends Controller
 
         $user = User::create([
             'name' => $request->name,
-            'restaurant_name' => $request->restaurant_name,
+            'restaurant_name' => $request->get('restaurant_name'),
             'phone' => $request->phone,
             'email' => $request->email,
             'password' => Hash::make($request->password),
@@ -41,17 +48,29 @@ class AuthController extends Controller
             'status' => 'active',
         ]);
 
+        $profile = Restaurant::create([
+            'user_id' => $user->id,
+            'restaurant_name' => $request->restaurant_name,
+            'detail' => $request->detail,
+            'logo' => $request->logo,
+            'opening_time' => $request->opening_time,
+            'closing_time' => $request->closing_time,
+            'commission_rate' => $request->commission_rate,
+        ]);
+
         $token = $user->createToken('RestaurantToken')->plainTextToken;
 
         return response()->json([
             'status' => true,
             'message' => 'Restaurant registered successfully',
             'token' => $token,
-            'data' => $user
+            'data' => [
+                'user' => $user,
+                'restaurant' => $profile
+            ]
         ]);
     }
 
-    // ---------------- LOGIN ----------------
     public function restaurantLogin(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -101,7 +120,6 @@ class AuthController extends Controller
         ]);
     }
 
-    // ---------------- LOGOUT ----------------
     public function logout(Request $request)
     {
         $request->user()->currentAccessToken()->delete();
@@ -112,7 +130,6 @@ class AuthController extends Controller
         ]);
     }
 
-    // ---------------- FORGOT PASSWORD ----------------
     public function forgotPassword(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -131,11 +148,16 @@ class AuthController extends Controller
         );
 
         return $status === Password::RESET_LINK_SENT
-            ? response()->json(['status' => true, 'message' => 'Reset link sent'])
-            : response()->json(['status' => false, 'message' => 'Unable to send reset link'], 500);
+            ? response()->json([
+                'status' => true,
+                'message' => 'Reset link sent'
+            ])
+            : response()->json([
+                'status' => false,
+                'message' => 'Unable to send reset link'
+            ], 500);
     }
 
-    // ---------------- RESET PASSWORD ----------------
     public function resetPassword(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -161,11 +183,16 @@ class AuthController extends Controller
         );
 
         return $status === Password::PASSWORD_RESET
-            ? response()->json(['status' => true, 'message' => 'Password reset successful'])
-            : response()->json(['status' => false, 'message' => 'Reset failed'], 500);
+            ? response()->json([
+                'status' => true,
+                'message' => 'Password reset successful'
+            ])
+            : response()->json([
+                'status' => false,
+                'message' => 'Reset failed'
+            ], 500);
     }
 
-    // ---------------- CHANGE PASSWORD ----------------
     public function changePassword(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -193,6 +220,7 @@ class AuthController extends Controller
             'password' => Hash::make($request->password)
         ]);
 
+       
         return response()->json([
             'status' => true,
             'message' => 'Password changed successfully'

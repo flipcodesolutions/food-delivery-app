@@ -1,34 +1,40 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\Restaurant\CategoryController;
 use App\Http\Controllers\Api\Restaurant\AuthController;
-use App\Http\Controllers\Api\Restaurant\DashboardController;
+use App\Http\Controllers\Api\Restaurant\RestaurantController;
 
 Route::prefix('restaurant')->group(function () {
 
+    // Authentication
     Route::post('/register', [AuthController::class, 'restaurantRegister']);
     Route::post('/login', [AuthController::class, 'restaurantLogin']);
+    Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
+    Route::post('/reset-password', [AuthController::class, 'resetPassword']);
 });
 
-Route::middleware('auth:sanctum')->group(function () {
-     Route::post('/restaurant/logout', [AuthController::class, 'logout']);
 
-    Route::post('/restaurant/change-password', [AuthController::class, 'changePassword']);
+/*
+|--------------------------------------------------------------------------
+| PROTECTED ROUTES (SANCTUM)
+|--------------------------------------------------------------------------
+*/
 
-    Route::get('/restaurant/dashboard', [DashboardController::class, 'index']);
+Route::middleware('auth:sanctum')->prefix('restaurant')->group(function () {
 
+    // Authentication
+    Route::post('/logout', [AuthController::class, 'logout']);
+    Route::post('/change-password', [AuthController::class, 'changePassword']);
+    Route::get('/reset-password/{token}', function (string $token) {
+    return response()->json([
+        'token' => $token
+    ]);
+})->name('password.reset');
 
+//Restaurant Profile
 
-    Route::get('/restaurant/categories', [CategoryController::class, 'index']);
+Route::get('/profile', [RestaurantController::class, 'getRestaurantProfile']);
 
-    Route::post('/restaurant/categories', [CategoryController::class, 'store']);
-
-    Route::get('/restaurant/categories/{id}', [CategoryController::class, 'show']);
-
-    Route::put('/restaurant/categories/{id}', [CategoryController::class, 'update']);
-
-    Route::delete('/restaurant/categories/{id}', [CategoryController::class, 'destroy']);
-
-
+    Route::put('/profile', [RestaurantController::class, 'updateRestaurantProfile']);
 });
+
