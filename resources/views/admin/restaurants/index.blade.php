@@ -150,7 +150,7 @@
                                     {{-- View Profile --}}
                                     <li>
                                        <a class="dropdown-item"
-                                          href="{{ route('admin.restaurants.index', $restaurant->id) }}">
+                                          href="{{ route('admin.restaurants.show', $restaurant->id) }}">
                                                👁 View Profile
 
                                        </a>

@@ -36,4 +36,6 @@ Route::middleware(['admin'])->prefix('admin')->name('admin.')->group(function ()
         ->name('cms.edit');
     Route::put('/cms/{slug}',[CmsController::class,'update'])
         ->name('cms.update');
+    Route::get('/restaurants/{id}',[RestaurantController::class,'show'])
+        ->name('restaurants.show');
 });

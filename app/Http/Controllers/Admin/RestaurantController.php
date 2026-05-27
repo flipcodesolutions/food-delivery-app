@@ -21,4 +21,9 @@ class RestaurantController extends Controller
         $restaurants=$restaurants->latest()->paginate(10);
         return view('admin.restaurants.index',compact('restaurants'));
     }
+    public function show($id){
+        $restaurant=User::with('restaurantProfile')->where('role','restaurant')->findOrFail($id);
+        return view('admin.restaurants.profile',compact('restaurant'));
+
+    }
 }

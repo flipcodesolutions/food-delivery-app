@@ -93,4 +93,8 @@ class User extends Authenticatable
     {
         return $this->hasOne(Cart::class);
     }
+    public function restaurantProfile()
+    {
+        return $this->hasOne(Restaurant::class, 'user_id');
+    }
 }
