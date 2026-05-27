@@ -17,11 +17,46 @@
     <div id="sidebar" class="sidebar">
         <h4><i class="bi bi-person"></i> <span class="logo-text">Food Delivery App</span></h4>
         <a href="{{ route('admin.users.index') }}" class="active"><i class="bi bi-person"></i> <span>User Management</span></a>
-        <a href="table.html"><i class="bi bi-telephone"></i> <span>Restaurant</span></a>
-        <a href="#"><i class="bi bi-star"></i> <span>Customers</span></a>
+        <a href="{{ route('admin.restaurants.index') }}"><i class="bi bi-telephone"></i> <span>Restaurant</span></a>
+        <a href="{{ route('admin.customer.index') }}"><i class="bi bi-star"></i> <span>Customers</span></a>
         <a href="#"><i class="bi bi-bar-chart"></i> <span>Orders</span></a>
-        <a href="#"><i class="bi bi-graph-up"></i> <span>CMS</span></a>
-        <a href="#"><i class="bi bi-graph-up"></i> <span>Support</span></a>
+        
+
+<li class="nav-item">
+    <a class="nav-link text-light d-flex justify-content-between align-items-center"
+       data-bs-toggle="collapse"
+       href="#cmsMenu"
+       role="button"
+       aria-expanded="false">
+
+        <span>
+            <i class="bi bi-file-text"></i> CMS
+        </span>
+
+        <i class="bi bi-chevron-down"></i>
+    </a>
+
+    <div class="collapse ps-3" id="cmsMenu">
+
+       <a href="{{ route('admin.cms.edit', 'about-us') }}">
+           <i class="bi bi-file-text"></i> <span>About</span>
+        </a>
+
+        <a href="{{ route('admin.cms.edit', 'terms-and-conditions') }}">
+            <i class="bi bi-file-text"></i> <span>Terms & Conditions</span>
+        </a>
+
+        <a href="{{ route('admin.cms.edit', 'privacy-policy') }}">
+            <i class="bi bi-file-text"></i> <span>Privacy Policy</span>
+        </a>
+        <a href="{{ route('admin.cms.edit', 'refund-policy') }}">
+            <i class="bi bi-file-text"></i> <span>Refund Policy</span>
+        </a>
+
+    </div>
+</li>
+
+</a><a href="#"><i class="bi bi-graph-up"></i> <span>Support</span></a>
         <a href="#"><i class="bi bi-graph-up"></i> <span>Restaurant Review</span></a>
         <a href="#"><i class="bi bi-graph-up"></i> <span>Offers</span></a>
 

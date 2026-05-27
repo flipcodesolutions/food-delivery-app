@@ -280,4 +280,7 @@ footer {
 .btn-action:focus {
     box-shadow: none !important;
 }
+.is-invalid {
+    border-color: #dc3545;
+}
 

@@ -3,6 +3,9 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\LoginController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\RestaurantController;
+use App\Http\Controllers\Admin\CustomerController;
+use App\Http\Controllers\Admin\CmsController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -22,4 +25,15 @@ Route::middleware(['admin'])->prefix('admin')->name('admin.')->group(function ()
 
     Route::resource('users', UserController::class);
 
+     // Restaurant List
+    Route::get('/restaurants', [RestaurantController::class, 'index'])
+        ->name('restaurants.index');
+
+    Route::get('/customer', [CustomerController::class, 'index'])
+        ->name('customer.index');   
+        
+    Route::get('/cms/{slug?} ', [CmsController::class, 'edit'])
+        ->name('cms.edit');
+    Route::put('/cms/{slug}',[CmsController::class,'update'])
+        ->name('cms.update');
 });

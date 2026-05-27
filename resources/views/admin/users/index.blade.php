@@ -16,6 +16,71 @@
     {{-- Card --}}
     <div class="card shadow-sm border-0">
         <div class="card-body">
+            <form method="GET" action="{{ route('admin.users.index') }}" class="mb-3">
+
+    <div class="row g-2 align-items-center">
+
+        {{-- Search Input --}}
+        <div class="col-md-5">
+            <input type="text"
+                   name="search"
+                   class="form-control"
+                   placeholder="Search by name"
+                   value="{{ request('search') }}">
+        </div>
+
+        {{-- Status Dropdown --}}
+        <div class="col-md-3">
+            <select name="status" class="form-select">
+
+                <option value="">All Status</option>
+
+                <option value="active"
+                    {{ request('status') == 'active' ? 'selected' : '' }}>
+                    Active
+                </option>
+
+                <option value="inactive"
+                    {{ request('status') == 'inactive' ? 'selected' : '' }}>
+                    Inactive
+                </option>
+
+                <option value="pending"
+                    {{ request('status') == 'pending' ? 'selected' : '' }}>
+                    Pending
+                </option>
+
+            </select>
+        </div>
+
+        {{-- Buttons --}}
+        <div class="col-md-4">
+
+            <div class="d-flex gap-2">
+
+                {{-- Filter Button --}}
+                <button type="submit"
+                        class="btn btn-custom px-4">
+
+                    Filter
+
+                </button>
+
+                {{-- Reset Button --}}
+                <a href="{{ route('admin.users.index') }}"
+                   class="btn btn-dark px-4">
+
+                    Reset
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</form>
 
             {{-- Table --}}
             <div class="table-responsive">
@@ -64,21 +129,22 @@
                                         class="btn btn-action btn-edit">
                                             Edit
                                     </a>
-
+                            @if($user->role!='admin')
                                 <form action="{{ route('admin.users.destroy', $user->id) }}"
                                     method="POST"
-                                        class="d-inline">
+                                    class="d-inline"
+                                    onsubmit="return confirmDelete(event, this)">
 
                                     @csrf
                                     @method('DELETE')
 
                                     <button type="submit"
-                                        class="btn btn-action btn-delete"
-                                        onclick="return confirm('Are you sure?')">
+                                        class="btn btn-action btn-delete">
                                              Delete
                                     </button>
 
                                 </form>
+                                @endif
                                 </td>
                             </tr>
                         @empty
@@ -87,11 +153,18 @@
                                     No users found
                                 </td>
                             </tr>
+                             
                         @endforelse
 
+                       
                     </tbody>
-
+                   
                 </table>
+                 
+                <div class="mt-3 p-2 bg-white rounded shadow-sm">
+                                 {{ $users->links() }}
+                             </div>
+
             </div>
 
         </div>

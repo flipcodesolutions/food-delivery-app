@@ -10,22 +10,33 @@ use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
-    public function index(){
-        $users=User::latest()->paginate(10);
+    public function index(Request $request){
+        
+        $users = User::query();
+        if($request->filled('search')){
+            $users->where('name','like','%' . $request->search .'%');
+        }
+        if($request->filled('status')){
+            $users->where('status',$request->status);
+        }
+        $users=$users->latest()->paginate(10);
         return view('admin.users.index',compact('users'));
+
+
     }
 
     public function create(){
         return view('admin.users.create');
     }
 
+
     public function store(Request $request){
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
-            'phone' => 'required|string|max:10',
+            'phone' => 'required|string|max:10|min:10',
             'password' => 'required|min:6',
-            'role' => 'required|in:admin,customer,restaurant,delivery partner',
+            'role' => 'required|in:admin,customer,restaurant,delivery_partner',
             'status' => 'required|in:active,inactive,pending',
         ]);
         User::create([
@@ -49,9 +60,9 @@ class UserController extends Controller
          $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $id,
-            'phone' => 'required|string|max:10',
-            'password' => 'required|min:6',
-            'role' => 'required|in:admin,customer,restaurant,delivery partner',
+            'phone' => 'required|string|max:10|min:10',
+            'password' => 'nullable|min:6',
+            'role' => 'required|in:admin,customer,restaurant,delivery_partner',
             'status' => 'required|in:active,inactive,pending',
         ]);
         $data=[
@@ -69,7 +80,11 @@ class UserController extends Controller
     }
     public function destroy($id){
         $user=User::findOrFail($id);
+        if($user->role=='admin'){
+            return redirect()->back()->with('error','Admin cannot be deleted');
+        }
         $user->delete();
         return redirect()->route('admin.users.index')->with('success','User deleted successfully');
     }
+
 }

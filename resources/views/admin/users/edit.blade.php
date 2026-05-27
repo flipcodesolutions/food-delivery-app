@@ -26,9 +26,14 @@
                     <label class="form-label">Name</label>
                     <input type="text"
                            name="name"
-                           value="{{ $user->name }}"
-                           class="form-control"
+                           value="{{ old('name', $user->name) }}"
+                           class="form-control @error('name') is-invalid @enderror"
                            required>
+                           @error('name')
+                           <div class="text-danger mt-1">
+                               {{ $message }}
+                           </div>
+                           @enderror
                 </div>
 
                 {{-- Email --}}
@@ -36,9 +41,14 @@
                     <label class="form-label">Email</label>
                     <input type="email"
                            name="email"
-                           value="{{ $user->email }}"
-                           class="form-control"
+                           value="{{ old('email', $user->email) }}"
+                           class="form-control @error('email') is-invalid @enderror"
                            required>
+                           @error('email')
+                           <div class="text-danger mt-1">
+                               {{ $message }}
+                           </div>
+                           @enderror
                 </div>
 
                 {{-- Phone --}}
@@ -46,8 +56,13 @@
                     <label class="form-label">Phone</label>
                     <input type="text"
                            name="phone"
-                           value="{{ $user->phone }}"
-                           class="form-control">
+                           value="{{ old('phone', $user->phone) }}"
+                           class="form-control @error('phone') is-invalid @enderror">
+                           @error('phone')
+                           <div class="text-danger mt-1">
+                            {{ $message }}
+                           </div>
+                           @enderror 
                 </div>
 
                 {{-- Password (optional) --}}
@@ -55,29 +70,45 @@
                     <label class="form-label">Password (Leave blank if not changing)</label>
                     <input type="password"
                            name="password"
-                           class="form-control"
+                           {{-- value="{{ old('password', $user->password) }}" --}}
+                           class="form-control @error('password') is-invalid @enderror"
                            placeholder="Enter new password">
+                           @error('password')
+                           <div class="text-danger mt-1">
+                               {{ $message }}
+                           </div>
+                           @enderror
                 </div>
 
                 {{-- Role --}}
                 <div class="mb-3">
                     <label class="form-label">Role</label>
-                    <select name="role" class="form-select" required>
-                        <option value="admin" {{ $user->role == 'admin' ? 'selected' : '' }}>Admin</option>
-                        <option value="customer" {{ $user->role == 'customer' ? 'selected' : '' }}>Customer</option>
-                        <option value="restaurant" {{ $user->role == 'restaurant' ? 'selected' : '' }}>Restaurant</option>
-                        <option value="delivery partner" {{ $user->role == 'delivery partner' ? 'selected' : '' }}>Delivery Partner</option>
+                    <select name="role" class="form-select @error('role') is-invalid @enderror" required>
+                        <option value="admin" {{ old('role', $user->role) == 'admin' ? 'selected' : '' }}>Admin</option>
+                        <option value="customer" {{ old('role', $user->role) == 'customer' ? 'selected' : '' }}>Customer</option>
+                        <option value="restaurant" {{ old('role', $user->role) == 'restaurant' ? 'selected' : '' }}>Restaurant</option>
+                        <option value="delivery partner" {{ old('role', $user->role) == 'delivery partner' ? 'selected' : '' }}>Delivery Partner</option>
                     </select>
+                    @error('role')
+                    <div class="text-danger mt-1">
+                        {{ $message }}
+                    </div>
+                    @enderror
                 </div>
 
                 {{-- Status --}}
                 <div class="mb-3">
                     <label class="form-label">Status</label>
-                    <select name="status" class="form-select" required>
-                        <option value="active" {{ $user->status == 'active' ? 'selected' : '' }}>Active</option>
-                        <option value="inactive" {{ $user->status == 'inactive' ? 'selected' : '' }}>Inactive</option>
-                        <option value="pending" {{ $user->status == 'pending' ? 'selected' : '' }}>Pending</option>
+                    <select name="status" class="form-select @error('status') is-invalid @enderror" required>
+                        <option value="active" {{ old('status', $user->status) == 'active' ? 'selected' : '' }}>Active</option>
+                        <option value="inactive" {{ old('status', $user->status) == 'inactive' ? 'selected' : '' }}>Inactive</option>
+                        <option value="pending" {{ old('status', $user->status) == 'pending' ? 'selected' : '' }}>Pending</option>
                     </select>
+                    @error('status')
+                    <div class="text-danger mt-1">
+                        {{ $message }}
+                    </div>
+                    @enderror
                 </div>
 
                 {{-- Submit --}}
