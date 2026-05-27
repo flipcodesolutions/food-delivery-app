@@ -3,7 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Pagination\Paginator;
+use Illuminate\Auth\Notifications\ResetPassword;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -20,6 +20,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        Paginator::useBootstrap();
+        ResetPassword::createUrlUsing(function ($user, string $token) {
+
+            return 'http://127.0.0.1:8000/reset-password?token='
+                    .$token.
+                    '&email='.$user->email;
+        });
     }
 }
