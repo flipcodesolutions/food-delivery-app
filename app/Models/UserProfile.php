@@ -11,4 +11,9 @@ class UserProfile extends Model
     'wallet_balance',
     'profile_image',
 ];
+
+public function user()
+{
+    return $this->belongsTo(User::class,'user_id');
+}
 }

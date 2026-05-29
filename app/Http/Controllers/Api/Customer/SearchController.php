@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Customer;
+namespace App\Http\Controllers\Api\Customer;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -115,7 +115,7 @@ class SearchController extends Controller
                     'banner' => $offer->banner
                         ? asset('storage/' . $offer->banner)
                         : null,
-    
+                        
                     'expire_at' => $offer->expire_at,
     
                     'restaurant_id' => $offer->restaurant->id ?? null,
@@ -128,4 +128,6 @@ class SearchController extends Controller
     
         return apiResponse(true,'Restaurant Offer Show',$offers,200);
     }
+
+    
 }

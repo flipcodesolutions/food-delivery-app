@@ -5,6 +5,7 @@ namespace App\Models;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -84,13 +85,27 @@ class User extends Authenticatable
         return $this->hasMany(Review::class, 'customer_id');
     }
     
-    // public function offers()
-    public function offers()
+    public function offers() : HasMany
     {
         return $this->hasMany(RestaurantOffer::class, 'restaurant_id');
     }
-    public function cart()
+
+    public function cart() : HasOne
     {
         return $this->hasOne(Cart::class);
+    }
+
+    public function restaurant() : HasOne
+    {
+        return $this->hasOne(Restaurant::class, 'user_id');
+    }
+
+    public function userProfile() : HasOne
+    {
+        return $this->hasOne(UserProfile::class,'user_id');
+    }
+
+    public function address() : HasMany {
+        return $this->hasMany(CustomerAddress::class);
     }
 }

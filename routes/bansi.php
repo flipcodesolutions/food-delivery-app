@@ -1,11 +1,13 @@
 <?php
 
+use App\Http\Controllers\Api\Customer\AddressController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Customer\AuthController;
-use App\Http\Controllers\Customer\CartController;
-use App\Http\Controllers\Customer\RestaurantListController;
-use App\Http\Controllers\Customer\SearchController;
+use App\Http\Controllers\Api\Customer\AuthController;
+use App\Http\Controllers\Api\Customer\CartController;
+use App\Http\Controllers\Api\Customer\RestaurantListController;
+use App\Http\Controllers\Api\Customer\SearchController;
+use App\Http\Controllers\Api\Customer\ProfileController;
 
 // Customer API
 
@@ -23,13 +25,14 @@ Route::prefix('customer')->group(function () {
 
     Route::get('/search', [SearchController::class, 'search']);
 
-    Route::get('/RestaurantList', [SearchController::class, 'restaurantList']);
+    Route::get('/restaurantList', [SearchController::class, 'restaurantList']);
 
-    Route::get('/RestaurantOffer', [SearchController::class, 'restaurantOffer']);
+    Route::get('/restaurantOffer', [SearchController::class, 'restaurantOffer']);
 
-    Route::get('/Restaurant', [RestaurantListController::class, 'restaurants']);
+    Route::get('/restaurant-menu/{id}', [RestaurantListController::class, 'restaurants']);
+    
 
-    Route::get('/category-list', [RestaurantListController::class, 'CategoryList']);
+    Route::get('/category-list/{id?}', [RestaurantListController::class, 'CategoryList']);
 });
 
 Route::middleware('auth:sanctum')->group(function () {
@@ -50,6 +53,14 @@ Route::middleware('auth:sanctum')->group(function () {
 
         // Route::post('/logout', [AuthController::class, 'logout']);
 
-        // Route::get('/profile', [AuthController::class, 'profile']);
+        Route::get('/profile', [ProfileController::class, 'profile']);
+
+    Route::post('/update-profile/{id}', [ProfileController::class, 'updateProfile']);
+
+    Route::post('/add-Address',[AddressController::class,'addAddress']);
+
+    Route::get('/get-Address',[AddressController::class,'getAddress']);
+
+    Route::patch('/update-Address/{id}',[AddressController::class,'updateAddress']);
     });
 });
