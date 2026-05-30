@@ -82,7 +82,7 @@ class User extends Authenticatable
 
     public function reviews(): HasMany
     {
-        return $this->hasMany(Review::class, 'customer_id');
+        return $this->hasMany(Review::class, 'restaurant_id','id');
     }
     
     public function offers() : HasMany
@@ -104,8 +104,9 @@ class User extends Authenticatable
     {
         return $this->hasOne(UserProfile::class,'user_id');
     }
-
-    public function address() : HasMany {
-        return $this->hasMany(CustomerAddress::class);
-    }
+    
+public function address()
+{
+    return $this->hasMany(CustomerAddress::class);
+}
 }

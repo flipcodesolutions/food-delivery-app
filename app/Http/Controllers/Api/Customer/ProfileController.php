@@ -45,7 +45,7 @@ class ProfileController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' => 'nullable|string|max:255',
-            'phone' => 'nullable|string|max:15',
+            'phone' => 'nullable|digits:10',
             'profile_image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 

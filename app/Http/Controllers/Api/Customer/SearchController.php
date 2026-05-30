@@ -11,89 +11,89 @@ use App\Models\User;
 class SearchController extends Controller
 {
     public function search(Request $request)
-    {
-        $search = $request->search;
+{
+    $search = trim($request->search);
 
-        if (!$search) {
+    if (!$search) {
+        return apiResponse(false, 'Search keyword is required', [], 422);
+    }
 
-            return apiResponse(false,'Search keyword is required',[],422);
+    // Search restaurants
+    $restaurants = User::where('role', 'restaurant')
+        ->whereRaw('LOWER(name) LIKE ?', ["%{$search}%"])
+        ->with(['restaurant','menuItems' => function ($query) {
+            $query->where('status', 'active')
+                  ->where('is_available', 1);
+        }])
+         ->withAvg('reviews', 'rating')
+        ->withCount('reviews')
+        ->get();
+
+    // Search foods
+    $foodItems = MenuItem::whereRaw('LOWER(item_name) LIKE ?', ["%{$search}%"])
+        ->where('status', 'active')
+        ->where('is_available', 1)
+        ->with('restaurant.restaurant')
+        ->get();
+
+    $foodRestaurants = [];
+
+    foreach ($foodItems as $item) {
+
+        if (!$item->restaurant) {
+            continue;
         }
 
-        //search Restaurant
-        $restaurants = User::where('role', 'restaurant')
-            ->where('name', 'LIKE', "%{$search}%")
-            ->get();
+        $restaurant = $item->restaurant;
 
-        // Search Food Items
-        $foodItems = MenuItem::where('item_name', 'LIKE', "%{$search}%")
-            ->where('status', 'active')
-            ->where('is_available', 1)
-            ->with('restaurant')
-            ->get();
-        
-        // Group Food By Restaurant
+        if (!isset($foodRestaurants[$restaurant->id])) {
 
-        $foodRestaurants = [];
-
-        foreach ($foodItems as $item) {
-
-            $restaurant = $item->restaurant;
-
-            if (!$restaurant) {
-                continue;
-            }
-
-            $restaurantId = $restaurant->id;
-
-            if (!isset($foodRestaurants[$restaurantId])) {
-
-                $foodRestaurants[$restaurantId] = [
-                    'restaurant_id' => $restaurant->id,
-                    'restaurant_name' => $restaurant->name,
-                    'foods' => []
-                ];
-            }
-
-            $foodRestaurants[$restaurantId]['foods'][] = [
-                'id' => $item->id,
-                'item_name' => $item->item_name,
-                'price' => $item->price,
-                'discount_price' => $item->discount_price,
-                'image' => $item->image,
+            $foodRestaurants[$restaurant->id] = [
+                'restaurant_id'   => $restaurant->id,
+                'restaurant_name' => $restaurant->name,
+                'restaurant_image'=> $restaurant->image,
+                'foods' => []
             ];
         }
 
-        return apiResponse(
-            true,
-            'Search Result',
-            [
-                'restaurants' => $restaurants,
-                'food_restaurants' => array_values($foodRestaurants)
-            ]
-        );
+        $foodRestaurants[$restaurant->id]['foods'][] = [
+            'id' => $item->id,
+            'item_name' => $item->item_name,
+            'price' => $item->price,
+            'discount_price' => $item->discount_price,
+            'image' => $item->image,
+        ];
+        
     }
+
+    return apiResponse(true, 'Search Result', [
+        'restaurant_results' => $restaurants,
+        // 'profile' => $restaurant->restaurant,
+        'food_results' => array_values($foodRestaurants),
+    ]);
+}
 
     //SEARCH Restaurant List API
 
     public function restaurantList(Request $request)
-    {
+{
+    $search = $request->search;
 
-        $search = $request->search;
+    $restaurants = User::where('role', 'restaurant')
+        ->when($search, function ($query) use ($search) {
+            $query->where('name', 'LIKE', "%{$search}%");
+        })
+        ->withAvg('reviews', 'rating')
+        ->withCount('reviews')
+        ->get();
 
-        $restaurants = User::where('role', 'restaurant')
+    return apiResponse(true, 'Restaurant List', $restaurants, 200);
+}
 
-            ->when($search, function ($query) use ($search) {
-
-                $query->where('name', 'LIKE', "%{$search}%");
-            })->get();
-            
-        return apiResponse(true,'Restaurant List',$restaurants,200);
-    }
-
-   public function restaurantOffer(Request $request)
+   public function restaurantOffer()
     {
         // Get Restaurant Offers
-        $offers = RestaurantOffer::with('restaurant')
+        $offers = RestaurantOffer::with('restaurant.restaurant')
             ->where('is_active', true)
     
             // Only non-expired offers
@@ -121,13 +121,10 @@ class SearchController extends Controller
                     'restaurant_id' => $offer->restaurant->id ?? null,
     
                     'restaurant_name' => $offer->restaurant->name ?? '',
-    
-                    'address' => $offer->restaurant->address ?? '',
                 ];
             });
     
         return apiResponse(true,'Restaurant Offer Show',$offers,200);
     }
-
-    
+  
 }

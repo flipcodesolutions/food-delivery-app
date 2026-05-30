@@ -20,7 +20,7 @@ class RestaurantCategory extends Model
 
     public function restaurant(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'restaurant_id');
+        return $this->belongsTo(User::class, 'restaurant_id','id');
     }
 
     public function menuItems(): HasMany

@@ -12,8 +12,12 @@ class RestaurantListController extends Controller
     public function restaurants(Request $request, $id)
 {
     $restaurant = User::with('restaurant')
-        ->where('role', 'restaurant')
-        ->find($id);
+    ->withAvg('reviews', 'rating')
+    ->withCount('reviews')
+    ->firstWhere([
+        'id' => $id,
+        'role' => 'restaurant'
+    ]);
 
     if (!$restaurant) {
 
@@ -26,7 +30,9 @@ class RestaurantListController extends Controller
     })->get();
 
     // menu query
-    $menuQuery = MenuItem::where('restaurant_id', $id);
+   $menuQuery = MenuItem::where('restaurant_id', $id)
+    ->where('status', 'active')
+    ->where('is_available', 1);
 
     // category filter
     if ($request->filled('category_id')) {
@@ -46,100 +52,47 @@ class RestaurantListController extends Controller
             'phone' => $restaurant->phone,
 
             // restaurant profile
-            'restaurant_name' => optional($restaurant->restaurantProfile)->restaurant_name,
-            'detail' => optional($restaurant->restaurantProfile)->detail,
-            'logo' => optional($restaurant->restaurantProfile)->logo,
-            'opening_time' => optional($restaurant->restaurantProfile)->opening_time,
-            'closing_time' => optional($restaurant->restaurantProfile)->closing_time,
-            'commission_rate' => optional($restaurant->restaurantProfile)->commission_rate,
+            'restaurant_name' => optional($restaurant->restaurant)->restaurant_name,
+            'detail' => optional($restaurant->restaurant)->detail,
+            'logo' => optional($restaurant->restaurant)->logo,
+            'opening_time' => optional($restaurant->restaurant)->opening_time,
+            'closing_time' => optional($restaurant->restaurant)->closing_time,
+            'commission_rate' => optional($restaurant->restaurant)->commission_rate,
+
+            'rating' => round($restaurant->reviews_avg_rating ?? 0, 1),
+            'total_reviews' => $restaurant->reviews_count,
         ],
 
         'categories' => $categories,
 
         'menu' => $menu
 
-    ], 200);
-}
-    // $id =  $request->id;
-
-    // $data  =  User:: find($id);
-    // $menu =  MenuItem::where('restaurant_id',$id)->get();
-    // return $menu;
-
-
-        // $categoryId = $request->category_id;
-
-        // $restaurants = User::where('role', 'restaurant')
-        //     ->get()
-        //     ->map(function ($restaurant) use ($categoryId) {
-
-        //         // Always return ALL categories (never filter)
-        //         $categories = RestaurantCategory::whereHas('menuItems', function ($query) use ($restaurant) {
-        //             $query->where('restaurant_id', $restaurant->id);
-        //     })
-        //     ->select('id', 'name')
-        //     ->get();
-
-        //     // Foods query (filtered only when category selected)
-        //     $foodsQuery = MenuItem::with('category')
-        //         ->where('restaurant_id', $restaurant->id);
-
-        //     // filter by category only if selected
-        //     if (!empty($categoryId)) {
-        //         $foodsQuery->where('category_id', $categoryId);
-        //     }
-
-        //     $foods = $foodsQuery->get()
-        //         ->map(function ($food) {
-        //             return [
-        //                 'id' => $food->id,
-        //                 'name' => $food->item_name,
-        //                 'price' => $food->price,
-        //                 'image' => $food->image,
-        //                 'category_id' => $food->category_id,
-        //                 'category_name' => optional($food->category)->name,
-        //             ];
-        //         });
-
-        //     return [
-        //         'id' => $restaurant->id,
-        //         'name' => $restaurant->name,
-        //         'image' => $restaurant->image,
-        //         'rating' => $restaurant->rating,
-        //         'delivery_time' => $restaurant->delivery_time,
-        //         'offer' => $restaurant->offer,
-        //         'cuisine' => $restaurant->cuisine,
-
-        //         'categories' => $categories,
-        //         'foods' => $foods,
-        //     ];
-        // });
-
-    // return apiResponse(true, 'Restaurant list fetched successfully', $restaurants, 200);
-    
+        ], 200);
+    }
+  
     //All Category List
    
 
     public function CategoryList(Request $req)
-{
-    // If you want optional id
-    $id = $req->id;
+    {
+        // If you want optional id
+        $id = $req->id;
 
-    // If you only want single category (optional logic)
-    if ($id) {
+        // If you only want single category (optional logic)
+        if ($id) {
 
-        $category = RestaurantCategory::select('id', 'name')
-            ->where('restaurant_id', $id)
-            ->get();
+            $category = RestaurantCategory::select('id', 'name')
+                ->where('restaurant_id', $id)
+                ->get();
 
-        return apiResponse(true, 'Category Detail', $category, 200);
+            return apiResponse(true, 'Category Detail', $category, 200);
+        }
+
+        // Otherwise all categories
+        $categories = RestaurantCategory::select('id', 'name')->get();
+
+        return apiResponse(true, 'All Categories Show', $categories, 200);
     }
-
-    // Otherwise all categories
-    $categories = RestaurantCategory::select('id', 'name')->get();
-
-    return apiResponse(true, 'All Categories Show', $categories, 200);
-}
 
 
 }

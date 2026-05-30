@@ -5,9 +5,11 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\Customer\AuthController;
 use App\Http\Controllers\Api\Customer\CartController;
+use App\Http\Controllers\Api\Customer\OrderController;
 use App\Http\Controllers\Api\Customer\RestaurantListController;
-use App\Http\Controllers\Api\Customer\SearchController;
 use App\Http\Controllers\Api\Customer\ProfileController;
+use App\Http\Controllers\Api\Customer\SearchController;
+use App\Http\Controllers\Api\Customer\CmsController;
 
 // Customer API
 
@@ -31,7 +33,6 @@ Route::prefix('customer')->group(function () {
 
     Route::get('/restaurant-menu/{id}', [RestaurantListController::class, 'restaurants']);
     
-
     Route::get('/category-list/{id?}', [RestaurantListController::class, 'CategoryList']);
 });
 
@@ -55,12 +56,24 @@ Route::middleware('auth:sanctum')->group(function () {
 
         Route::get('/profile', [ProfileController::class, 'profile']);
 
-    Route::post('/update-profile/{id}', [ProfileController::class, 'updateProfile']);
+        Route::post('/update-profile/{id}', [ProfileController::class, 'updateProfile']);
 
-    Route::post('/add-Address',[AddressController::class,'addAddress']);
+        Route::post('/add-Address',[AddressController::class,'addAddress']);
 
-    Route::get('/get-Address',[AddressController::class,'getAddress']);
+        Route::get('/get-Address',[AddressController::class,'getAddress']);
 
-    Route::patch('/update-Address/{id}',[AddressController::class,'updateAddress']);
+        Route::post('/update-Address/{id}',[AddressController::class,'updateAddress']);
+
+         Route::post('/place-order', [OrderController::class, 'placeOrder']);
+
+        Route::get('/orders', [OrderController::class, 'myOrders']);
+
+        Route::get('/orders/{id}', [OrderController::class, 'orderDetails']);
+
+        Route::delete('/cancel-orders/{id}', [OrderController::class, 'cancelOrder']);
+
+        Route::get('/cms/{title?}', [CmsController::class, 'cms']);
+
+        Route::get('/cms/{slug}', [CmsController::class, 'showCMS']);
     });
 });

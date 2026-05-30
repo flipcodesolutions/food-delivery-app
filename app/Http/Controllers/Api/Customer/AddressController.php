@@ -26,6 +26,7 @@ class AddressController extends Controller
         if($validate->fails()){
             return apiResponse(false,'Invalid Data',$validate->errors(),422);
         }
+
         $userId = $request->user()->id;
 
         if($request->is_default == true){
@@ -34,7 +35,6 @@ class AddressController extends Controller
 
         }
 
-        
         $address = CustomerAddress::create([
             'user_id' => $userId,
             'type' => $request->type,
@@ -55,9 +55,9 @@ class AddressController extends Controller
     public function getAddress(Request $request){
      
         $userId = $request->user()->id;
-    $address = CustomerAddress::where('user_id',$userId)
-    ->latest()
-    ->get();
+        $address = CustomerAddress::where('user_id',$userId)
+        ->latest()
+        ->get();
 
     return apiResponse(true ,'Address fetched Successfully',$address,200);
 
@@ -66,12 +66,12 @@ class AddressController extends Controller
     public function updateAddress(Request $request,$id){
          $validate = Validator::make($request->all(),[
             'type' =>'nullable|string',
-            'address_line_1' => 'required|string',
+            'address_line_1' => 'nullable|string',
             'address_line_2' => 'nullable|string',
             'landmark' =>'nullable|string',
-            'city' => 'required|string',
-            'state' => 'required|string',
-            'pincode' => 'required|string',
+            'city' => 'nullable|string',
+            'state' => 'nullable|string',
+            'pincode' => 'nullable|string',
             'latitude' => 'nullable',
             'longitude' => 'nullable',
             'is_default'=>'nullable|boolean',
@@ -86,28 +86,31 @@ class AddressController extends Controller
         $address = CustomerAddress::where('user_id',$userId)
         ->find($id);
 
-            if (!$address) {
-        return apiResponse(false, 'Address not found', null, 404);
-    }
+        if (!$address) {
+            return apiResponse(false, 'Address not found', null, 404);
+        }
+
         if($request->is_default == true){
             CustomerAddress :: where('user_id',$userId)
             ->update(['is_default'=>false]);
 
         }
-         $address->update([
-        'type' => $request->type,
-        'address_line_1' => $request->address_line_1,
-        'address_line_2' => $request->address_line_2,
-        'landmark' => $request->landmark,
-        'city' => $request->city,
-        'state' => $request->state,
-        'pincode' => $request->pincode,
-        'latitude' => $request->latitude,
-        'longitude' => $request->longitude,
-        'is_default' => $request->is_default ?? $address->is_default,
-    ]);
+         $data = $request->only([
+            'type',
+            'address_line_1',
+            'address_line_2',
+            'landmark',
+            'city' ,
+            'state', 
+            'pincode',
+            'latitude',
+            'longitude' ,
+            'is_default' => $request->is_default ?? $address->is_default,
+        ]);
+         
+       $address->update($data);
 
-    return apiResponse(true, 'Address updated successfully', $address, 200);
-}
+        return apiResponse(true, 'Address updated successfully', $address, 200);
     }
+}
         

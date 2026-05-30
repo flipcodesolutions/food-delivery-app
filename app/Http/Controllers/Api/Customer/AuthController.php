@@ -13,53 +13,53 @@ use Illuminate\Support\Str;
 
 class AuthController extends Controller
 {
-public function register(Request $request)
-{
-    $validator = Validator::make($request->all(), [
-        'name' => 'required|string|max:255',
-        'email' => 'required|email|unique:users,email',
-        'phone' => 'required|unique:users,phone',
-        'password' => 'required|min:6',
-    ]);
+    public function register(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email',
+            'phone' => 'required|unique:users,phone',
+            'password' => 'required|min:6',
+        ]);
 
-    if ($validator->fails()) {
+        if ($validator->fails()) {
+
+            return apiResponse(
+                false,
+                'Invalid Data',
+                $validator->errors(),
+                422
+            );
+        }
+
+        // Create User
+        $customer = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'phone' => $request->phone,
+            'password' => Hash::make($request->password),
+            'status' => 1,
+            'role' => 'customer',
+        ]);
+
+        // Create User Profile Automatically
+        UserProfile::create([
+            'user_id' => $customer->id,
+        ]);
+
+        // Generate Token
+        $token = $customer->createToken('Customer_Token')->plainTextToken;
 
         return apiResponse(
-            false,
-            'Invalid Data',
-            $validator->errors(),
-            422
+            true,
+            'Register Successfully',
+            [
+                'token' => $token,
+                'customer' => $customer
+            ],
+            200
         );
     }
-
-    // Create User
-    $customer = User::create([
-        'name' => $request->name,
-        'email' => $request->email,
-        'phone' => $request->phone,
-        'password' => Hash::make($request->password),
-        'status' => 1,
-        'role' => 'customer',
-    ]);
-
-    // Create User Profile Automatically
-    UserProfile::create([
-        'user_id' => $customer->id,
-    ]);
-
-    // Generate Token
-    $token = $customer->createToken('Customer_Token')->plainTextToken;
-
-    return apiResponse(
-        true,
-        'Register Successfully',
-        [
-            'token' => $token,
-            'customer' => $customer
-        ],
-        200
-    );
-}
 
     // login API
     public function login(Request $request){
